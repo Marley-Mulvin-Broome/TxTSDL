@@ -6,9 +6,11 @@
 #include "txtsdl_events.h"
 #include "tui/tui_window.h"
 #include "tui/tui_label.h"
+#include "tui/tui_input.h"
 
 TuiWindow *game_window;
 TuiControl *labelControl;
+TuiControl *inputControl;
 
 void setup(TxtSDLScreen *screen) {
 	game_window = TuiWindowCreate(
@@ -22,8 +24,11 @@ void setup(TxtSDLScreen *screen) {
 
 	TuiLabel *label = TuiLabelCreate(5, 3, "HELLO WORLD");
 	labelControl = TuiControlCreate(TUI_CONTROL_LABEL, label);
+	TuiInput *input = TuiInputCreate(5, 5, 10, screen);
+	inputControl = TuiControlCreate(TUI_CONTROL_INPUT, input);
 
 	TuiWindowAddChild(game_window, labelControl);
+	TuiWindowAddChild(game_window, inputControl);
 }
 
 void update(TxtSDLScreen *screen, float delta_time) {
@@ -42,6 +47,7 @@ int main(void) {
 
 	TxtSDL_Run(&window_info, update, setup);
 
+	TuiControlDestroy(inputControl);
 	TuiControlDestroy(labelControl);
 	TuiWindowDestroy(game_window);
 

@@ -5,8 +5,10 @@
 #include <string.h>
 
 #include "tui_control.h"
+#include "../txtsdl.h"
 #include "../txtsdl_screen.h"
 #include "../txtsdl_colour.h"
+#include "../txtsdl_events.h"
 #include "../ds/list.h"
 
 
@@ -19,6 +21,8 @@ typedef struct _TuiWindow {
     List *children;
     TxtSDLScreen *screen;
 } TuiWindow;
+
+static void keypressHandler(TxTSDLKeyEvent *event, void *data);
 
 TuiWindow *TuiWindowCreate(
     const char *title, int x, int y, int width, int height, TxtSDLScreen *screen
@@ -50,6 +54,11 @@ TuiWindow *TuiWindowCreate(
         return NULL;
     }
 
+    TxtSDL_AddKeyPressEventHandler(
+        keypressHandler,
+        window
+    );
+
     return window;
 }
 
@@ -74,8 +83,19 @@ void TuiWindowAddChild(TuiWindow *window, TuiControl *child) {
     ListAdd(window->children, child);
 }
 
+void TuiWindowKeyPress(TuiWindow *window, TxTSDLKeyEvent *event) {
+    for (int i = 0; i < ListSize(window->children); i++) {
+        TuiControl *child = ListGet(window->children, i);
+        TuiControlKeyPress(child, event);
+    }
+}
+
 void TuiWindowDestroy(TuiWindow *window) {
     free(window->title);
     ListDestroy(window->children);
     free(window);
+}
+
+static void keypressHandler(TxTSDLKeyEvent *event, void *data) {
+    TuiWindowKeyPress(data, event);
 }

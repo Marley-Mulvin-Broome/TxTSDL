@@ -154,6 +154,14 @@ int TxtSDLScreen_WriteString(
     return TXTSDL_SUCCESS;    
 }
 
+void TxtSDLScreen_Clear(TxtSDLScreen *screen) {
+    for (int x = 0; x < screen->width; x++) {
+        for (int y = 0; y < screen->height; y++) {
+            setupDefaultCharCell(&(screen->buffer[x][y]));
+        }
+    }
+}
+
 
 void TxtSDLScreen_DrawBuffer(TxtSDLScreen *screen) {
     TxtSDL_StartRender();

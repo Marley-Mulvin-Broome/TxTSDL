@@ -8,6 +8,7 @@
 #include "txtsdl_screen.h"
 #include "txtsdl_colour.h"
 #include "txtsdl_events.h"
+#include "txtsdl_events.h"
 
 /**
  * Function which is called every frame to update the game state
@@ -123,7 +124,7 @@ void TxtSDL_Quit(void);
 
 // Event handling
 
-void TxtSDL_AddKeyPressEventHandler(void (*handler)(TxTSDLKeyEvent *));
+void TxtSDL_AddKeyPressEventHandler(TxtSDL_KeyPressEventHandler handler, void *data);
 void TxtSDL_RemoveKeyPressEventHandler(void (*handler)(TxTSDLKeyEvent *));
 
 #endif

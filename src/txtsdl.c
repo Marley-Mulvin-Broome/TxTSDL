@@ -18,6 +18,7 @@ TxtSDLScreen *TxtSDL_Screen;
 List *TxtSDL_KeyPressEventHandlers;
 
 static void assertInitialised(const char *message);
+static void cleanupEventHandlers(void);
 
 void TxtSDL_Run(
     const TxtSDL_WindowInfo *window_info, 
@@ -45,6 +46,8 @@ void TxtSDL_Run(
         current_time = SDL_GetTicks();
         delta_time = (current_time - prev_time) / 1000.0f;
         
+        TxtSDLScreen_Clear(screen);
+
         // Poll for events
 
         while (SDL_PollEvent(&event))
@@ -63,8 +66,8 @@ void TxtSDL_Run(
                     };
 
                     for (int i = 0; i < ListSize(TxtSDL_KeyPressEventHandlers); i++) {
-                        void (*handler)(TxTSDLKeyEvent *) = ListGet(TxtSDL_KeyPressEventHandlers, i);
-                        handler(&key_event);
+                        TxtSDL_KeyPressEventHandlerWrapper *wrapper = ListGet(TxtSDL_KeyPressEventHandlers, i);
+                        wrapper->handler(&key_event, wrapper->data);
                     }
                     break;
 
@@ -219,7 +222,7 @@ void TxtSDL_UpdateWindow(void) {
 }
 
 void TxtSDL_Cleanup(void) {
-    ListDestroy(TxtSDL_KeyPressEventHandlers);
+    cleanupEventHandlers();
     TxtSDLScreen_Destroy(TxtSDL_Screen);
     SDL_DestroyWindow(TxtSDL_Window);
     SDL_DestroyRenderer(TxtSDL_Renderer);
@@ -231,11 +234,17 @@ void TxtSDL_Quit(void) {
 
 // Event handling
 
-void TxtSDL_AddKeyPressEventHandler(void (*handler)(TxTSDLKeyEvent *)) {
-    ListAdd(TxtSDL_KeyPressEventHandlers, handler);
+void TxtSDL_AddKeyPressEventHandler(TxtSDL_KeyPressEventHandler handler, void *data) {
+    TxtSDL_KeyPressEventHandlerWrapper *wrapper = malloc(sizeof(TxtSDL_KeyPressEventHandlerWrapper));
+
+    wrapper->data = data;
+    wrapper->handler = handler;
+
+    ListAdd(TxtSDL_KeyPressEventHandlers, wrapper);
 }
 
 void TxtSDL_RemoveKeyPressEventHandler(void (*handler)(TxTSDLKeyEvent *)) {
+    // TODO: Deal with wrapper, this doesn't currently work properly
     ListRemove(TxtSDL_KeyPressEventHandlers, handler);
 }
 
@@ -245,4 +254,11 @@ static void assertInitialised(const char *message) {
         fprintf(stderr, "%s\n", message);
         exit(EXIT_FAILURE);
     }
+}
+
+static void cleanupEventHandlers(void) {
+    for (int i = 0; i < ListSize(TxtSDL_KeyPressEventHandlers); i++) {
+        free(ListGet(TxtSDL_KeyPressEventHandlers, i));
+    }
+    ListDestroy(TxtSDL_KeyPressEventHandlers);
 }

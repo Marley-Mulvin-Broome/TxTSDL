@@ -53,6 +53,8 @@ int TxtSDLScreen_WriteString(
     bool overflow
 );
 
+void TxtSDLScreen_Clear(TxtSDLScreen *screen);
+
 /**
  * Renders the current contents of the buffer to the screen, updating it for the user to see
  * @param screen pointer to a screen
