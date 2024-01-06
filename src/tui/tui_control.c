@@ -33,7 +33,7 @@ void TuiControlDraw(TuiControl *control, TxtSDLScreen *screen) {
             TuiWindowDraw(control->control);
             break;
         case TUI_CONTROL_INPUT:
-            TuiInputDraw(control->control, screen);
+            TuiInputDraw(control->control);
             break;
         default:
             fprintf(stderr, "Unknown control type: %d\n", control->type);
