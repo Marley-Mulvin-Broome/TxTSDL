@@ -50,5 +50,5 @@ int main(void) {
 	// Frees all children
 	TuiWindowDestroy(game_window);
 
-	return 0;
+	return EXIT_SUCCESS;
 }
