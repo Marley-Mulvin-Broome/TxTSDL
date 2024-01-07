@@ -123,6 +123,19 @@ void TxtSDL_SetTextureColour(
 );
 
 /**
+ * Sets the cursor to be visible or not
+ * @param visible Whether or not the cursor should be visible
+*/
+void TxtSDL_SetCursorVisible(bool visible);
+
+/**
+ * Sets the position of the cursor
+ * @param x The x position of the cursor
+ * @param y The y position of the cursor
+*/
+void TxtSDL_SetCursor(int x, int y);
+
+/**
  * Draws the render buffer to the screen, making any drawn changes visible
 */
 void TxtSDL_UpdateWindow(void);

@@ -5,6 +5,7 @@
 #include <string.h>
 #include <SDL2/SDL.h>
 
+#include "../txtsdl.h"
 #include "../txtsdl_screen.h"
 
 typedef struct _TuiInput {
@@ -46,7 +47,7 @@ TuiInput *TuiInputCreate(int x, int y, int width, TxtSDLScreen *screen) {
 }
 
 void TuiInputDraw(TuiInput *input) {
-    // TxtSDL_SetCursor(input->x + input->cursor_x, input->y);
+    TxtSDL_SetCursor(input->x + input->cursor_x, input->y);
 
     // TODO: draw background
 

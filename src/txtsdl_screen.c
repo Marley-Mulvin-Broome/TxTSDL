@@ -164,15 +164,11 @@ void TxtSDLScreen_Clear(TxtSDLScreen *screen) {
 
 
 void TxtSDLScreen_DrawBuffer(TxtSDLScreen *screen) {
-    TxtSDL_StartRender();
-
     for (int x = 0; x < screen->width; x++) {
         for (int y = 0; y < screen->height; y++) {
             drawBufferCell(screen, x, y);
         }
     }
-
-    TxtSDL_UpdateWindow();
 }
 
 bool TxtSDLScreen_PointInBounds(const TxtSDLScreen *screen, int x, int y) {

@@ -9,12 +9,14 @@
 #include "txtsdl_screen.h"
 #include "txtsdl_constants.h"
 #include "txtsdl_events.h"
+#include "txtsdl_cursor.h"
 #include "ds/list.h"
 
 static bool hasInitiatialised = false;
 SDL_Window *TxtSDL_Window;
 SDL_Renderer *TxtSDL_Renderer;
 TxtSDLScreen *TxtSDL_Screen;
+TxtSDLCursor *TxtSDL_Cursor;
 List *TxtSDL_KeyPressEventHandlers;
 
 static void assertInitialised(const char *message);
@@ -39,6 +41,8 @@ void TxtSDL_Run(
     float current_time = 0;
     float prev_time = 0;
     float delta_time = 0;
+
+    TxtSDL_SetCursorVisible(true);
 
     while (game_running)
     {
@@ -80,7 +84,10 @@ void TxtSDL_Run(
             update(screen, delta_time);
         }
 
+        TxtSDL_StartRender();
         TxtSDLScreen_DrawBuffer(screen);
+        TxtSDLCursor_Draw(TxtSDL_Cursor, 16, 16);
+        TxtSDL_UpdateWindow();
     }
 
     TxtSDL_Cleanup();
@@ -115,6 +122,13 @@ TxtSDLScreen *TxtSDL_Init(const TxtSDL_WindowInfo *window_info) {
         16,
         16,
         "img/charset.bmp"
+    );
+
+    TxtSDL_Cursor = TxtSDLCursor_Create(
+        0,
+        0,
+        16,
+        4
     );
 
     TxtSDL_KeyPressEventHandlers = ListCreate();
@@ -211,6 +225,21 @@ void TxtSDL_SetTextureColour(
     if (result != TXTSDL_SUCCESS) {
         fprintf(stderr, "Error setting texture colour: %s\n", SDL_GetError());
     }
+}
+
+void TxtSDL_SetCursorVisible(bool visible) {
+    TxtSDLCursor_SetVisible(
+        TxtSDL_Cursor,
+        visible
+    );
+}
+
+void TxtSDL_SetCursor(int x, int y) {
+    TxtSDLCursor_SetPosition(
+        TxtSDL_Cursor,
+        x,
+        y
+    );
 }
 
 void TxtSDL_UpdateWindow(void) {
