@@ -101,12 +101,13 @@ void TxtSDLScreen_WriteChar(TxtSDLScreen *screen, int x, int y, const TxtSDLChar
         return;
     }
 
-    if (!TxtSDLFont_ContainsCharacter(screen->font, cell_value->value)) {
+    if (!TxtSDLFont_ContainsCharacter(screen->font, cell_value->value) && cell_value->value != '\0') {
         fprintf(stderr, "Cannot write unsupported character '%c'\n", cell_value->value);
         return;
     }
 
-    screen->buffer[x][y].value = cell_value->value;
+
+    screen->buffer[x][y].value = cell_value->value == '\0' ? ' ' : cell_value->value;
     screen->buffer[x][y].foreground = cell_value->foreground;
     screen->buffer[x][y].background = cell_value->background;
 }
