@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "../txtsdl_screen.h"
 #include "../txtsdl_colour.h"

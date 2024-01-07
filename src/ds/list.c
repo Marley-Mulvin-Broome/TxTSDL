@@ -76,6 +76,12 @@ void ListRemoveAt(List *list, int index) {
     list->size--;
 }
 
+void ListIterate(List *list, void (*callback)(void *)) {
+    for (int i = 0; i < list->size; i++) {
+        callback(list->data[i]);
+    }
+}
+
 void *ListGet(List *list, int index) {
     if (index < 0 || index >= list->size) {
         fprintf(stderr, "Index out of bounds\n");

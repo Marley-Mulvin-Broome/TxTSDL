@@ -66,6 +66,8 @@ typedef struct {
 */
 void TxtSDL_Run(
     const TxtSDL_WindowInfo *window_info, 
+    const char *font_img_path,
+    const char *font_descriptor_path,
     TxtSDL_UpdateFunction update,
     TxtSDL_SetupFunction setup,
     TxtSDL_DrawFunction draw
@@ -75,7 +77,11 @@ void TxtSDL_Run(
  * Initialises the TxtSDL engine and the screen to draw to
  * @param window_info The information about the window to create
 */
-TxtSDLScreen *TxtSDL_Init(const TxtSDL_WindowInfo *window_info);
+TxtSDLScreen *TxtSDL_Init(
+    const TxtSDL_WindowInfo *window_info,
+    const char *font_img_path,
+    const char *font_descriptor_path
+);
 
 /**
  * Creates a window for rendering to

@@ -45,7 +45,14 @@ int main(void) {
 		SDL_WINDOW_SHOWN
 	};
 
-	TxtSDL_Run(&window_info, update, setup, NULL);
+	TxtSDL_Run(
+		&window_info, 
+		"img/charset.bmp", 
+		"charset/charset.font", 
+		update, 
+		setup, 
+		NULL
+	);
 
 	// Frees all children
 	TuiWindowDestroy(game_window);

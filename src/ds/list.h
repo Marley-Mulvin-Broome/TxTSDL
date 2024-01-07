@@ -7,6 +7,8 @@
 
 typedef struct _List List;
 
+typedef void (*ListIterateCallback)(void *);
+
 /**
  * Creates a new list of void pointers.
  * @returns A pointer to the list.
@@ -41,6 +43,8 @@ void ListRemoveAt(List *list, int index);
  * @param match The function to match the element with.
 */
 void ListRemoveAtMatch(List *list, bool (*match)(void *));
+
+void ListIterate(List *list, void (*callback)(void *));
 
 /**
  * Gets an element from the list at the specified index.

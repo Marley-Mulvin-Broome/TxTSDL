@@ -24,7 +24,8 @@ TxtSDLScreen *TxtSDLScreen_Create(
     int height, 
     int cell_width,
     int cell_height,
-    const char *charset_img
+    const char *charset_img,
+    const char *charset_descriptor
 );
 
 /**

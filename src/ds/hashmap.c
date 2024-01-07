@@ -71,19 +71,35 @@ void HashmapToList(Hashmap *map, void **out_array, int *size) {
     }
 }
 
-void HashmapInsert(Hashmap *map, char key, void *item) {
+void HashmapIterate(Hashmap *map, void (*callback)(void *)) {
+    for (int i = 0; i < map->capacity; i++) {
+        if (map->items[i] == NULL) {
+            continue;
+        }
+
+        HashmapItem *next_item = map->items[i];
+
+        while (next_item != NULL) {
+            callback(next_item->data);
+
+            next_item = next_item->next;
+        }
+    }
+}
+
+void HashmapInsert(Hashmap *map, uchar_t key, void *item) {
     int index = key % map->capacity;
 
     map->items[index] = HashmapItemInsert(map->items[index], key, item);
 }
 
-HashmapItem *HashmapGet(Hashmap *map, char item) {
+HashmapItem *HashmapGet(Hashmap *map, uchar_t item) {
     int index = item % map->capacity;
 
     return HashmapItemGet(map->items[index], item);
 }
 
-bool HashmapContainsKey(Hashmap *map, char key) {
+bool HashmapContainsKey(Hashmap *map, uchar_t key) {
     return HashmapGet(map, key) != NULL;
 }
 

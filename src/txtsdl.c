@@ -24,12 +24,16 @@ static void cleanupEventHandlers(void);
 
 void TxtSDL_Run(
     const TxtSDL_WindowInfo *window_info, 
+    const char *font_img_path,
+    const char *font_descriptor_path,
     TxtSDL_UpdateFunction update,
     TxtSDL_SetupFunction setup,
     TxtSDL_DrawFunction draw
 ) {
     TxtSDLScreen *screen = TxtSDL_Init(
-        window_info
+        window_info,
+        font_img_path,
+        font_descriptor_path
     );
 
     if (setup) {
@@ -86,9 +90,11 @@ void TxtSDL_Run(
         }
 
         TxtSDL_StartRender();
+
         if (draw) {
             draw(screen);
         }
+
         TxtSDLScreen_DrawBuffer(screen);
         TxtSDLCursor_Draw(TxtSDL_Cursor, 16, 16);
         TxtSDL_UpdateWindow();
@@ -99,7 +105,11 @@ void TxtSDL_Run(
 }
 
 
-TxtSDLScreen *TxtSDL_Init(const TxtSDL_WindowInfo *window_info) {
+TxtSDLScreen *TxtSDL_Init(
+    const TxtSDL_WindowInfo *window_info,
+    const char *font_img_path,
+    const char *font_descriptor_path
+) {
 	if (SDL_Init(SDL_INIT_EVERYTHING) < 0) {
 		fprintf(stderr, "Error initialising SDL: %s\n", SDL_GetError());
 		exit(EXIT_FAILURE);
@@ -125,7 +135,8 @@ TxtSDLScreen *TxtSDL_Init(const TxtSDL_WindowInfo *window_info) {
         50,
         16,
         16,
-        "img/charset.bmp"
+        "img/charset.bmp",
+        "img/charset.font"
     );
 
     TxtSDL_Cursor = TxtSDLCursor_Create(

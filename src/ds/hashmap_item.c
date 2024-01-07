@@ -5,7 +5,9 @@
 #include <errno.h>
 #include <string.h>
 
-HashmapItem *HashmapItemCreate(char key, void *value) {
+#include "charlist.h"
+
+HashmapItem *HashmapItemCreate(uchar_t key, void *value) {
     HashmapItem *item = malloc(sizeof(HashmapItem));
 
     if (!item) {
@@ -21,7 +23,7 @@ HashmapItem *HashmapItemCreate(char key, void *value) {
     return item;
 }
 
-HashmapItem *HashmapItemInsert(HashmapItem *item, char key, void *value) {
+HashmapItem *HashmapItemInsert(HashmapItem *item, uchar_t key, void *value) {
     if (item == NULL) {
         return HashmapItemCreate(key, value);
     }
@@ -31,7 +33,7 @@ HashmapItem *HashmapItemInsert(HashmapItem *item, char key, void *value) {
     return item;
 }
 
-HashmapItem *HashmapItemGet(HashmapItem *item, char key) {
+HashmapItem *HashmapItemGet(HashmapItem *item, uchar_t key) {
     if (item == NULL) {
         return NULL;
     }

@@ -8,6 +8,8 @@
 #include "txtsdl_colour.h"
 #include "txtsdl_constants.h"
 #include "ds/hashmap.h"
+#include "ds/charlist.h"
+#include "font/font.h"
 
 // ===== Private Fields ===== //
 typedef struct _Screen {
@@ -16,8 +18,7 @@ typedef struct _Screen {
     int height;
     int cell_width;
     int cell_height;
-    Hashmap *char_to_rect_map;
-    SDL_Texture *charset_texture;
+    TxtSDLFont *font;
 } TxtSDLScreen;
 
 static const char TxtSDL_SupportedCharacters[] = {
@@ -54,8 +55,6 @@ static TxtSDLCharCell **createBuffer(int width, int height);
 static void setupDefaultCharCell(TxtSDLCharCell *cell);
 static void freeBuffer(TxtSDLCharCell **buffer, int width);
 static void drawBufferCell(TxtSDLScreen *screen, int x, int y);
-static Hashmap *createCharRectHashmap();
-static void destroyCharRectHashmap(Hashmap *hashmap);
 
 // ===== Interface ===== //
 
@@ -65,7 +64,8 @@ TxtSDLScreen *TxtSDLScreen_Create(
     int height, 
     int cell_width,
     int cell_height,
-    const char *charset_img
+    const char *charset_img,
+    const char *charset_descriptor
 ) {
     TxtSDLScreen *screen = malloc(sizeof(TxtSDLScreen));
 
@@ -79,10 +79,12 @@ TxtSDLScreen *TxtSDLScreen_Create(
     screen->height = height;
     screen->cell_width = cell_width;
     screen->cell_height = cell_height;
-    screen->charset_texture = TxtSDL_LoadTexture(charset_img);
-    screen->char_to_rect_map = createCharRectHashmap(
-        screen->cell_width,
-        screen->cell_height
+    screen->font = TxtSDLFont_Create(
+        "Nameless Font",
+        cell_width,
+        cell_height,
+        charset_img,
+        charset_descriptor
     );
 
     return screen;
@@ -99,7 +101,7 @@ void TxtSDLScreen_WriteChar(TxtSDLScreen *screen, int x, int y, const TxtSDLChar
         return;
     }
 
-    if (!HashmapContainsKey(screen->char_to_rect_map, cell_value->value)) {
+    if (!TxtSDLFont_ContainsCharacter(screen->font, cell_value->value)) {
         fprintf(stderr, "Cannot write unsupported character '%c'\n", cell_value->value);
         return;
     }
@@ -187,7 +189,6 @@ bool TxtSDLScreen_XInBound(const TxtSDLScreen *screen, int x) {
 }
 
 void TxtSDLScreen_Destroy(TxtSDLScreen *screen) {
-    destroyCharRectHashmap(screen->char_to_rect_map);
     freeBuffer(screen->buffer, screen->width);
     free(screen);
 }
@@ -246,10 +247,15 @@ static void drawBufferCell(TxtSDLScreen *screen, int x, int y) {
         .h = screen->cell_height
     };
 
-    SDL_Rect *source_rect = (SDL_Rect *)HashmapGet(
-        screen->char_to_rect_map,
+    TxtSDLCharacterDrawInfo drawing_info = TxtSDLFont_GetCharacter(
+        screen->font,
         cell.value
-    )->data;
+    );
+    
+    if (!drawing_info.source) {
+        fprintf(stderr, "Failed to get drawing info for character: %c\n", cell.value);
+        return;
+    }
 
     // Drawing background first or will appear on-top of text
     TxtSDL_SetDrawColour(
@@ -260,39 +266,14 @@ static void drawBufferCell(TxtSDLScreen *screen, int x, int y) {
     
     // Drawing foreground so text appears above background
     TxtSDL_SetTextureColour(
-        screen->charset_texture,
+        drawing_info.texture,
         &(cell.foreground)
     );
 
+    // Actually draw the character
     TxtSDL_DrawImage(
-        source_rect,
+        drawing_info.source,
         &drawing_rect,
-        screen->charset_texture
+        drawing_info.texture
     );
-}
-
-static Hashmap *createCharRectHashmap(int cell_width, int cell_height) {
-    Hashmap *hashmap = HashmapCreate();
-
-    for (int i = 0; i < sizeof(TxtSDL_SupportedCharacters); i++) {
-        SDL_Rect *rect = malloc(sizeof(SDL_Rect));
-
-        rect->w = cell_width;
-        rect->h = cell_height;
-        rect->x = cell_width * i;
-        rect->y = 0;
-        
-        HashmapInsert(
-            hashmap,
-            TxtSDL_SupportedCharacters[i],
-            rect
-        );
-    }
-
-    return hashmap;
-}
-
-static void destroyCharRectHashmap(Hashmap *hashmap) {
-    // TODO: destroy all the items
-    HashmapDestroy(hashmap);
 }
