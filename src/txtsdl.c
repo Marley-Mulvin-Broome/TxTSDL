@@ -25,7 +25,8 @@ static void cleanupEventHandlers(void);
 void TxtSDL_Run(
     const TxtSDL_WindowInfo *window_info, 
     TxtSDL_UpdateFunction update,
-    TxtSDL_SetupFunction setup
+    TxtSDL_SetupFunction setup,
+    TxtSDL_DrawFunction draw
 ) {
     TxtSDLScreen *screen = TxtSDL_Init(
         window_info
@@ -85,6 +86,9 @@ void TxtSDL_Run(
         }
 
         TxtSDL_StartRender();
+        if (draw) {
+            draw(screen);
+        }
         TxtSDLScreen_DrawBuffer(screen);
         TxtSDLCursor_Draw(TxtSDL_Cursor, 16, 16);
         TxtSDL_UpdateWindow();

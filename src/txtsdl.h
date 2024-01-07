@@ -28,6 +28,16 @@ typedef void (*TxtSDL_SetupFunction)(
 );
 
 /**
+ * Function which is called once during each frames render period.
+ * @param screen The screen to draw to
+ * @note This function is called after TxtSDL_StartRender and before TxtSDL_UpdateWindow.
+ * This means that if you need to draw any rectangles, images, etc, you should do it here.
+*/
+typedef void (*TxtSDL_DrawFunction)(
+    TxtSDLScreen *screen
+);
+
+/**
  * Information about a window to create
  * @param title The title of the window
  * @param x The x position of the window
@@ -51,12 +61,14 @@ typedef struct {
  * @param window_info The information about the window to create
  * @param update The function to call every frame to update the game state
  * @param setup The function to call once before the game loop starts
+ * @param draw The function to call once during each frames render period
  * @note This function will not return until the game is quit
 */
 void TxtSDL_Run(
     const TxtSDL_WindowInfo *window_info, 
     TxtSDL_UpdateFunction update,
-    TxtSDL_SetupFunction setup
+    TxtSDL_SetupFunction setup,
+    TxtSDL_DrawFunction draw
 );
 
 /**

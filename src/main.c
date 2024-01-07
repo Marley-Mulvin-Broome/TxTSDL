@@ -45,7 +45,7 @@ int main(void) {
 		SDL_WINDOW_SHOWN
 	};
 
-	TxtSDL_Run(&window_info, update, setup);
+	TxtSDL_Run(&window_info, update, setup, NULL);
 
 	// Frees all children
 	TuiWindowDestroy(game_window);
