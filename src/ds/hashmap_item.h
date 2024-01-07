@@ -1,6 +1,10 @@
 #ifndef HASHMAP_ITEM_H
 #define HASHMAP_ITEM_H
 
+/**
+ * Represents an item internally stored in a hashmap.
+ * Acts as a linked list for items with the same hash.
+*/
 typedef struct _HashmapItem {
     void *next;
     void *data;

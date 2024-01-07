@@ -5,6 +5,9 @@
 
 #include "txtsdl_colour.h"
 
+/**
+ * Represents the data stored in each position of a TxtSDL_Screen
+*/
 typedef struct _TxtSDLCharCell {
     char value;
     TxtSDLColour foreground;

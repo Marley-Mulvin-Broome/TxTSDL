@@ -12,6 +12,8 @@
 
 /**
  * Function which is called every frame to update the game state
+ * @param screen The screen to draw to
+ * @param delta_time The time since the last frame in seconds
 */
 typedef void (*TxtSDL_UpdateFunction)(
     TxtSDLScreen *screen, float delta_time
@@ -19,12 +21,21 @@ typedef void (*TxtSDL_UpdateFunction)(
 
 /**
  * Function which is called once before the game loop starts
+ * @param screen The screen to draw to
 */
 typedef void (*TxtSDL_SetupFunction)(
     TxtSDLScreen *screen
 );
 
-
+/**
+ * Information about a window to create
+ * @param title The title of the window
+ * @param x The x position of the window
+ * @param y The y position of the window
+ * @param width The width of the window
+ * @param height The height of the window
+ * @param flags The flags to pass to SDL_CreateWindow
+*/
 typedef struct {
     char *title;
     int x;
@@ -37,6 +48,10 @@ typedef struct {
 /**
  * Runs the TxtSDL engine game loop. This function will also initialise the engine.
  * This function doesn't have to be used, but is an easy way to get started.
+ * @param window_info The information about the window to create
+ * @param update The function to call every frame to update the game state
+ * @param setup The function to call once before the game loop starts
+ * @note This function will not return until the game is quit
 */
 void TxtSDL_Run(
     const TxtSDL_WindowInfo *window_info, 
@@ -124,7 +139,15 @@ void TxtSDL_Quit(void);
 
 // Event handling
 
+/**
+ * Adds a function to be called when a key is pressed
+ * @param handler The function to call
+ * @param data The data to pass to the function
+ * @note This function only works when using TxtSDL_Run
+*/
 void TxtSDL_AddKeyPressEventHandler(TxtSDL_KeyPressEventHandler handler, void *data);
+
+// TODO: Fix this function to work
 void TxtSDL_RemoveKeyPressEventHandler(void (*handler)(TxTSDLKeyEvent *));
 
 #endif
