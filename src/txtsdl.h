@@ -62,7 +62,7 @@ typedef struct {
  * @param update The function to call every frame to update the game state
  * @param setup The function to call once before the game loop starts
  * @param draw The function to call once during each frames render period
- * @note This function will not return until the game is quit
+ * @note This function will not return until the game is quit.
 */
 void TxtSDL_Run(
     const TxtSDL_WindowInfo *window_info, 
