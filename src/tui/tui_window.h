@@ -42,7 +42,7 @@ void TuiWindowAddChild(TuiWindow *window, TuiControl *child);
 void TuiWindowKeyPress(TuiWindow *window, TxTSDLKeyEvent *event);
 
 /**
- * Destroys a TUI window.
+ * Destroys a TUI window and all child components.
  * @param window The window to destroy.
 */
 void TuiWindowDestroy(TuiWindow *window);

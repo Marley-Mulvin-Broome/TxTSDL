@@ -47,8 +47,7 @@ int main(void) {
 
 	TxtSDL_Run(&window_info, update, setup);
 
-	TuiControlDestroy(inputControl);
-	TuiControlDestroy(labelControl);
+	// Frees all children
 	TuiWindowDestroy(game_window);
 
 	return 0;

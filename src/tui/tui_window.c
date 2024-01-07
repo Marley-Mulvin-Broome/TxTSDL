@@ -92,6 +92,12 @@ void TuiWindowKeyPress(TuiWindow *window, TxTSDLKeyEvent *event) {
 
 void TuiWindowDestroy(TuiWindow *window) {
     free(window->title);
+
+    for (int i = 0; i < ListSize(window->children); i++) {
+        TuiControl *child = ListGet(window->children, i);
+        TuiControlDestroy(child);
+    }
+
     ListDestroy(window->children);
     free(window);
 }
