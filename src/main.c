@@ -8,6 +8,9 @@
 #include "tui/tui_label.h"
 #include "tui/tui_input.h"
 
+#define FONT_IMG_PATH "img/no_licence/terminal.bmp"
+#define FONT_PATH "img/no_licence/terminal.font"
+
 TuiWindow *game_window;
 TuiControl *labelControl;
 TuiControl *inputControl;
@@ -22,7 +25,7 @@ void setup(TxtSDLScreen *screen) {
 		screen
 	);
 
-	TuiLabel *label = TuiLabelCreate(5, 3, "HELLO WORLD");
+	TuiLabel *label = TuiLabelCreate(5, 3, "Bad BABY");
 	labelControl = TuiControlCreate(TUI_CONTROL_LABEL, label);
 	TuiInput *input = TuiInputCreate(5, 5, 10, screen);
 	inputControl = TuiControlCreate(TUI_CONTROL_INPUT, input);
@@ -47,8 +50,8 @@ int main(void) {
 
 	TxtSDL_Run(
 		&window_info, 
-		"img/charset.bmp", 
-		"charset/charset.font", 
+		FONT_IMG_PATH, 
+		FONT_PATH, 
 		update, 
 		setup, 
 		NULL

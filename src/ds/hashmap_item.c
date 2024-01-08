@@ -28,6 +28,14 @@ HashmapItem *HashmapItemInsert(HashmapItem *item, uchar_t key, void *value) {
         return HashmapItemCreate(key, value);
     }
 
+    // Override items which have the same key
+    if (item->key == key) {
+        // TODO: remove this free
+        free(item->data);
+        item->data = value;
+        return item;
+    }
+
     item->next = HashmapItemInsert(item->next, key, value);
 
     return item;

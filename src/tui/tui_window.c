@@ -10,10 +10,11 @@
 #include "../txtsdl_colour.h"
 #include "../txtsdl_events.h"
 #include "../ds/list.h"
+#include "../ds/charlist.h"
 
 
 typedef struct _TuiWindow {
-    char *title;
+    String *title;
     int x;
     int y;
     int width;
@@ -34,14 +35,12 @@ TuiWindow *TuiWindowCreate(
         return NULL;
     }
 
-    window->title = malloc(sizeof(char) * (strlen(title) + 1));
+    window->title = StringFromCString(title);
 
     if (!window->title) {
         fprintf(stderr, "Failed to allocate memory for window title\n");
         return NULL;
     }
-
-    strcpy(window->title, title);
     window->x = x;
     window->y = y;
     window->width = width;
@@ -91,7 +90,7 @@ void TuiWindowKeyPress(TuiWindow *window, TxTSDLKeyEvent *event) {
 }
 
 void TuiWindowDestroy(TuiWindow *window) {
-    free(window->title);
+    StringDestroy(window->title);
 
     for (int i = 0; i < ListSize(window->children); i++) {
         TuiControl *child = ListGet(window->children, i);

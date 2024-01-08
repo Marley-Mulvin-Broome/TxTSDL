@@ -7,19 +7,18 @@
 
 #include "../txtsdl.h"
 #include "../txtsdl_screen.h"
+#include "../ds/charlist.h"
 
 typedef struct _TuiInput {
     int x, y;
     int width;
-    int size;
     int cursor_x;
-    char *text;
+    String *text;
     TxtSDLScreen *screen;
 } TuiInput;
 
 static void inputCharacter(TuiInput *input, char value);
 static void backspaceText(TuiInput *input);
-static void clearScreenOfText(TuiInput *input, TxtSDLScreen *screen);
 
 TuiInput *TuiInputCreate(int x, int y, int width, TxtSDLScreen *screen) {
     TuiInput *input = malloc(sizeof(TuiInput));
@@ -29,7 +28,7 @@ TuiInput *TuiInputCreate(int x, int y, int width, TxtSDLScreen *screen) {
         return NULL;
     }
 
-    input->text = malloc(sizeof(char) * (width + 1));
+    input->text = StringCreate();
 
     if (!input->text) {
         fprintf(stderr, "Failed to allocate memory for input text\n");
@@ -41,7 +40,6 @@ TuiInput *TuiInputCreate(int x, int y, int width, TxtSDLScreen *screen) {
     input->width = width;
     input->screen = screen;
     input->cursor_x = 0;
-    input->size = 0;
 
     return input;
 }
@@ -50,9 +48,6 @@ void TuiInputDraw(TuiInput *input) {
     TxtSDL_SetCursor(input->x + input->cursor_x, input->y);
 
     // TODO: draw background
-
-    // If we don't clear the control first, removed text may still be displayed
-    // clearScreenOfText(input, input->screen);
 
     TxtSDLScreen_WriteString(
         input->screen,
@@ -102,20 +97,23 @@ void TuiInputKeyPress(TuiInput *input, int key) {
 }
 
 void TuiInputDestroy(TuiInput *input) {
-    free(input->text);
+    StringDestroy(input->text);
     free(input);
 }
 
 static void inputCharacter(TuiInput *input, char value) {
-    if (input->size == input->width) {
+    if (StringSize(input->text) >= input->width) {
         return;
     }
 
-    value = toupper(value);
-
-    // Must append at cursor position
-    input->text[input->cursor_x++] = value;
-    input->size++;
+    // If at end, append
+    if (input->cursor_x == StringSize(input->text)) {
+        StringAppend(input->text, value);
+        input->cursor_x++;
+        return;
+    }
+    // else, insert
+    StringInsert(input->text, input->cursor_x++, value);
 }
 
 static void backspaceText(TuiInput *input) {
@@ -124,29 +122,12 @@ static void backspaceText(TuiInput *input) {
     }
 
     // Must shift all characters otherwise they disappear
-    for (int i = input->cursor_x; i < input->size; i++) {
-        input->text[i - 1] = input->text[i];
+    for (int i = input->cursor_x; i < StringSize(input->text); i++) {
+        StringSetAt(input->text, i, StringGetAt(input->text, i + 1));
     }
 
+    // Make sure to remove the last character
+    StringRemoveAt(input->text, StringSize(input->text) - 1);
 
     input->cursor_x--;
-    input->size--;
-    input->text[input->size] = '\0';
-}
-
-static void clearScreenOfText(TuiInput *input, TxtSDLScreen *screen) {
-    TxtSDLCharCell cell = {
-        .value = ' ',
-        .foreground = COLOUR_WHITE,
-        .background = COLOUR_BLACK
-    };
-    
-    for (int i = 0; i < input->width; i++) {
-        TxtSDLScreen_WriteChar(
-            screen,
-            input->x + i,
-            input->y,
-            &cell
-        );
-    }
 }

@@ -24,6 +24,7 @@ String *StringFromCString(const char *str);
 String *StringFromFileDescriptor(FILE *file);
 String *StringFromFileDescriptorLine(FILE *file);
 List *StringSplit(String *string, uchar_t delimiter);
+void StringSetAt(String *string, int index, uchar_t c);
 void StringAppend(String *string, uchar_t c);
 void StringRemove(String *string, uchar_t c);
 void StringRemoveAt(String *string, int index);

@@ -21,36 +21,6 @@ typedef struct _Screen {
     TxtSDLFont *font;
 } TxtSDLScreen;
 
-static const char TxtSDL_SupportedCharacters[] = {
-    'A',
-    'B',
-    'C',
-    'D',
-    'E',
-    'F',
-    'G',
-    'H',
-    'I',
-    'J',
-    'K',
-    'L',
-    'M',
-    'N',
-    'O',
-    'P',
-    'Q',
-    'R',
-    'S',
-    'T',
-    'U',
-    'V',
-    'W',
-    'X',
-    'Y',
-    'Z',
-    ' '
-};
-
 static TxtSDLCharCell **createBuffer(int width, int height);
 static void setupDefaultCharCell(TxtSDLCharCell *cell);
 static void freeBuffer(TxtSDLCharCell **buffer, int width);
@@ -112,11 +82,42 @@ void TxtSDLScreen_WriteChar(TxtSDLScreen *screen, int x, int y, const TxtSDLChar
     screen->buffer[x][y].background = cell_value->background;
 }
 
-int TxtSDLScreen_WriteString(
+int TxtSDLScreen_WriteCString(
     TxtSDLScreen *screen, 
     int x, 
     int y, 
     const char *text,
+    const TxtSDLColour *foreground,
+    const TxtSDLColour *background,
+    bool overflow
+) {
+    String *text_copy = StringFromCString(text);
+
+    if (!text_copy) {
+        fprintf(stderr, "Error copying string to write to screen\n");
+        return TXTSDL_FAILURE;
+    }
+
+    int result = TxtSDLScreen_WriteString(
+        screen,
+        x,
+        y,
+        text_copy,
+        foreground,
+        background,
+        overflow
+    );
+
+    StringDestroy(text_copy);
+
+    return result;
+}
+
+int TxtSDLScreen_WriteString(
+    TxtSDLScreen *screen, 
+    int x, 
+    int y, 
+    String *text,
     const TxtSDLColour *foreground,
     const TxtSDLColour *background,
     bool overflow
@@ -126,7 +127,7 @@ int TxtSDLScreen_WriteString(
         return TXTSDL_FAILURE;
     }
 
-    int length = strlen(text);
+    int length = StringSize(text);
 
     if (length == 0) {
         return TXTSDL_SUCCESS;
@@ -139,7 +140,7 @@ int TxtSDLScreen_WriteString(
     };
 
     for (int i = 0; i < length; i++, x++) {
-        cell_value.value = text[i];
+        cell_value.value = StringGetAt(text, i);
 
         // Must check if we write out of width bounds or error
         if (!TxtSDLScreen_XInBound(screen, x)) {

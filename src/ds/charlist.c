@@ -132,6 +132,15 @@ List *StringSplit(String *string, uchar_t delimiter) {
     return list;
 }
 
+void StringSetAt(String *string, int index, uchar_t c) {
+    if (index < 0 || index >= string->size) {
+        fprintf(stderr, "Index out of bounds in string\n");
+        exit(EXIT_FAILURE);
+    }
+
+    string->data[index] = c;
+}
+
 void StringAppend(String *string, uchar_t c) {
     if (string->size == string->capacity) {
         string->capacity *= 2;
@@ -179,8 +188,8 @@ void StringConcat(String *string, const uchar_t *str) {
 }
 
 int StringInsert(String *string, int index, uchar_t c) {
-    if (index < 0 || index >= string->size) {
-        fprintf(stderr, "Index out of bounds\n");
+    if (index < 0 || (index >= string->size && string->size != 0)) {
+        fprintf(stderr, "Index out of bounds when inserting into string\n");
         return TXTSDL_FAILURE;
     }
 

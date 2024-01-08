@@ -9,7 +9,7 @@
 
 typedef struct _TuiLabel {
     int x, y;
-    char *text;
+    String *text;
 } TuiLabel;
 
 TuiLabel *TuiLabelCreate(int x, int y, const char *text) {
@@ -20,14 +20,13 @@ TuiLabel *TuiLabelCreate(int x, int y, const char *text) {
         return NULL;
     }
 
-    label->text = malloc(sizeof(char) * (strlen(text) + 1));
+    label->text = StringFromCString(text);
 
     if (!label->text) {
         fprintf(stderr, "Failed to allocate memory for label text\n");
         return NULL;
     }
 
-    strcpy(label->text, text);
     label->x = x;
     label->y = y;
 
@@ -47,6 +46,6 @@ void TuiLabelDraw(TuiLabel *label, TxtSDLScreen *screen) {
 }
 
 void TuiLabelDestroy(TuiLabel *label) {
-    free(label->text);
+    StringDestroy(label->text);
     free(label);
 }

@@ -135,8 +135,8 @@ TxtSDLScreen *TxtSDL_Init(
         50,
         16,
         16,
-        "img/charset.bmp",
-        "img/charset.font"
+        font_img_path,
+        font_descriptor_path
     );
 
     TxtSDL_Cursor = TxtSDLCursor_Create(
