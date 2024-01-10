@@ -45,7 +45,7 @@ int main(void) {
 		0,
 		800,
 		600,
-		SDL_WINDOW_SHOWN
+		SDL_WINDOW_SHOWN | SDL_WINDOW_FULLSCREEN
 	};
 
 	TxtSDL_Run(
