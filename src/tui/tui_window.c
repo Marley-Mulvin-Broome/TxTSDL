@@ -5,6 +5,7 @@
 #include <string.h>
 
 #include "tui_control.h"
+#include "tui_control_linked_list.h"
 #include "../txtsdl.h"
 #include "../txtsdl_screen.h"
 #include "../txtsdl_colour.h"
@@ -13,12 +14,12 @@
 #include "../ds/charlist.h"
 
 
+
 typedef struct _TuiWindow {
     String *title;
-    int x;
-    int y;
-    int width;
-    int height;
+    int x, y;
+    int width, height;
+    FocusedControlLinkedList *focusable_controls;
     List *children;
     TxtSDLScreen *screen;
 } TuiWindow;
@@ -29,6 +30,12 @@ TuiWindow *TuiWindowCreate(
     const char *title, int x, int y, int width, int height, TxtSDLScreen *screen
 ) {
     TuiWindow *window = malloc(sizeof(TuiWindow));
+
+    window->x = x;
+    window->y = y;
+    window->width = width;
+    window->height = height;
+    window->screen = screen;
 
     if (!window) {
         fprintf(stderr, "Failed to allocate memory for window\n");
@@ -41,15 +48,18 @@ TuiWindow *TuiWindowCreate(
         fprintf(stderr, "Failed to allocate memory for window title\n");
         return NULL;
     }
-    window->x = x;
-    window->y = y;
-    window->width = width;
-    window->height = height;
-    window->screen = screen;
+    
     window->children = ListCreate();
 
     if (!window->children) {
         fprintf(stderr, "Failed to create list for window children\n");
+        return NULL;
+    }
+
+    window->focusable_controls = FocusedControlLinkedListCreate();
+
+    if (!window->focusable_controls) {
+        fprintf(stderr, "Failed to create focused control linked list for window\n");
         return NULL;
     }
 
@@ -80,13 +90,37 @@ void TuiWindowDraw(TuiWindow *window) {
 
 void TuiWindowAddChild(TuiWindow *window, TuiControl *child) {
     ListAdd(window->children, child);
+
+    if (TuiControlFocusable(child)) {
+        FocusedControlLinkedListAdd(window->focusable_controls, child);
+        
+        if (FocusedControlLinkedListSize(window->focusable_controls) == 1) {
+            TuiControlFocus(child);
+        }
+    }
 }
 
 void TuiWindowKeyPress(TuiWindow *window, TxTSDLKeyEvent *event) {
+    // Control key presses -> tab
+    if (event->key == SDLK_TAB) {
+        TuiWindowNextFocus(window);
+        return;
+    }
+
     for (int i = 0; i < ListSize(window->children); i++) {
         TuiControl *child = ListGet(window->children, i);
         TuiControlKeyPress(child, event);
     }
+}
+
+void TuiWindowNextFocus(TuiWindow *window) {
+    TuiControlUnfocus(
+        FocusedControlLinkedListGetFocusedControl(window->focusable_controls)
+    );
+
+    TuiControlFocus(
+        FocusedControlLinkedListNext(window->focusable_controls)
+    );
 }
 
 void TuiWindowDestroy(TuiWindow *window) {

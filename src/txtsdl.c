@@ -39,7 +39,7 @@ void TxtSDL_Run(
     }
 
     SDL_Event event;
-    int game_running = 1;
+    bool game_running = true;
 
     float current_time = 0;
     float prev_time = 0;
@@ -62,7 +62,7 @@ void TxtSDL_Run(
             switch (event.type)
             {
                 case SDL_QUIT:
-                    game_running = 0;
+                    game_running = false;
                     break;
 
                 case SDL_KEYDOWN:
@@ -99,7 +99,7 @@ void TxtSDL_Run(
             TxtSDLScreen_GetCellWidth(TxtSDL_Screen), 
             TxtSDLScreen_GetCellHeight(TxtSDL_Screen)
         );
-        
+
         TxtSDL_UpdateWindow();
     }
 

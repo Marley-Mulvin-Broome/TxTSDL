@@ -12,8 +12,6 @@
 #define FONT_PATH "img/no_licence/terminal.font"
 
 TuiWindow *game_window;
-TuiControl *labelControl;
-TuiControl *inputControl;
 
 void setup(TxtSDLScreen *screen) {
 	game_window = TuiWindowCreate(
@@ -26,12 +24,14 @@ void setup(TxtSDLScreen *screen) {
 	);
 
 	TuiLabel *label = TuiLabelCreate(5, 3, "Bad BABY");
-	labelControl = TuiControlCreate(TUI_CONTROL_LABEL, label);
-	TuiInput *input = TuiInputCreate(5, 5, 10, screen);
-	inputControl = TuiControlCreate(TUI_CONTROL_INPUT, input);
+	TuiControl *labelControl = TuiControlCreate(TUI_CONTROL_LABEL, label);
+	TuiInput *input = TuiInputCreate(5, 5, 20, screen);
+	TuiControl *inputControl = TuiControlCreate(TUI_CONTROL_INPUT, input);
+	TuiInput *second_input = TuiInputCreate(5, 6, 20, screen);
 
 	TuiWindowAddChild(game_window, labelControl);
 	TuiWindowAddChild(game_window, inputControl);
+	TuiWindowAddChild(game_window, TuiControlCreate(TUI_CONTROL_INPUT, second_input));
 }
 
 void update(TxtSDLScreen *screen, float delta_time) {

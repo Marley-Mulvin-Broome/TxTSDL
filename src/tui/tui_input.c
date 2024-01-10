@@ -3,21 +3,24 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 #include <SDL2/SDL.h>
 
 #include "../txtsdl.h"
 #include "../txtsdl_screen.h"
+#include "../txtsdl_input.h"
 #include "../ds/charlist.h"
 
 typedef struct _TuiInput {
     int x, y;
     int width;
     int cursor_x;
+    bool focused;
     String *text;
     TxtSDLScreen *screen;
 } TuiInput;
 
-static void inputCharacter(TuiInput *input, char value);
+static void inputCharacter(TuiInput *input, int value);
 static void backspaceText(TuiInput *input);
 
 TuiInput *TuiInputCreate(int x, int y, int width, TxtSDLScreen *screen) {
@@ -45,7 +48,9 @@ TuiInput *TuiInputCreate(int x, int y, int width, TxtSDLScreen *screen) {
 }
 
 void TuiInputDraw(TuiInput *input) {
-    TxtSDL_SetCursor(input->x + input->cursor_x, input->y);
+    if (input->focused) {
+        TxtSDL_SetCursor(input->x + input->cursor_x, input->y);
+    }
 
     // TODO: draw background
 
@@ -60,40 +65,30 @@ void TuiInputDraw(TuiInput *input) {
     );
 }
 
-void TuiInputKeyPress(TuiInput *input, int key) {
-    switch (key) {
-        case SDLK_BACKSPACE: // Backspace
-            backspaceText(input);
-            break;
-        case SDLK_a:
-        case SDLK_b:
-        case SDLK_c:
-        case SDLK_d:
-        case SDLK_e:
-        case SDLK_f:
-        case SDLK_g:
-        case SDLK_h:
-        case SDLK_i:
-        case SDLK_j:
-        case SDLK_k:
-        case SDLK_l:
-        case SDLK_m:
-        case SDLK_n:
-        case SDLK_o:
-        case SDLK_p:
-        case SDLK_q:
-        case SDLK_r:
-        case SDLK_s:
-        case SDLK_t:
-        case SDLK_u:
-        case SDLK_v:
-        case SDLK_w:
-        case SDLK_x:
-        case SDLK_y:
-        case SDLK_z:
-            inputCharacter(input, key);
-            break;
+void TuiInputFocus(TuiInput *input) {
+    input->focused = true;
+}
+
+void TuiInputUnfocus(TuiInput *input) {
+    input->focused = false;
+}
+
+void TuiInputKeyPress(TuiInput *input, TxTSDLKeyEvent *event) {
+    if (!input->focused || event->key == 1073742049) {
+        return;
     }
+
+    if (event->key == SDLK_BACKSPACE) {
+        backspaceText(input);
+        return;
+    }
+
+    bool shift = event->modifiers & KMOD_SHIFT;
+
+    inputCharacter(
+        input,
+        TxtSDL_KeyPressToCharacter(event->key, shift)
+    );
 }
 
 void TuiInputDestroy(TuiInput *input) {
@@ -101,7 +96,7 @@ void TuiInputDestroy(TuiInput *input) {
     free(input);
 }
 
-static void inputCharacter(TuiInput *input, char value) {
+static void inputCharacter(TuiInput *input, int value) {
     if (StringSize(input->text) >= input->width) {
         return;
     }

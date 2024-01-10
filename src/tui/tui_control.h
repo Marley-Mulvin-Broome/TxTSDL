@@ -34,6 +34,21 @@ TuiControl *TuiControlCreate(int type, void *control);
 void TuiControlDraw(TuiControl *control, TxtSDLScreen *screen);
 
 /**
+ * Checks if a TUI control is focusable.
+ * @param control The control to check.
+ * @return Whether or not the control is focusable.
+*/
+bool TuiControlFocusable(TuiControl *control);
+
+/**
+ * Focuses a TUI control.
+ * @param control The control to focus.
+*/
+void TuiControlFocus(TuiControl *control);
+
+void TuiControlUnfocus(TuiControl *control);
+
+/**
  * Handles a key press event for a TUI control.
  * @param control The control to handle the event for.
  * @param event The event to handle.
