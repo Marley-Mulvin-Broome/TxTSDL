@@ -41,17 +41,23 @@ void update(TxtSDLScreen *screen, float delta_time) {
 int main(void) {
 	TxtSDL_WindowInfo window_info = {
 		"TxTSDL",
-		0,
-		0,
+		SDL_WINDOWPOS_CENTERED,
+		SDL_WINDOWPOS_CENTERED,
 		800,
 		600,
-		SDL_WINDOW_SHOWN | SDL_WINDOW_FULLSCREEN
+		SDL_WINDOW_SHOWN | SDL_WINDOW_ALLOW_HIGHDPI
+	};
+
+	TxtSDL_FontLoadInfo font_info = {
+		.font_descriptor_path = FONT_PATH,
+		.font_img_path = FONT_IMG_PATH,
+		.target_height = 24,
+		.target_width = 16
 	};
 
 	TxtSDL_Run(
 		&window_info, 
-		FONT_IMG_PATH, 
-		FONT_PATH, 
+		&font_info,
 		update, 
 		setup, 
 		NULL

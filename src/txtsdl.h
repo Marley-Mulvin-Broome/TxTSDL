@@ -55,10 +55,19 @@ typedef struct {
     Uint32 flags;
 } TxtSDL_WindowInfo;
 
+typedef struct {
+    char *font_img_path;
+    char *font_descriptor_path;
+    // The target width and height of the font for rendering
+    // This is used to scale the font to the correct size
+    int target_width, target_height;
+} TxtSDL_FontLoadInfo;
+
 /**
  * Runs the TxtSDL engine game loop. This function will also initialise the engine.
  * This function doesn't have to be used, but is an easy way to get started.
  * @param window_info The information about the window to create
+ * @param font_info The information about the font to load and how to display it
  * @param update The function to call every frame to update the game state
  * @param setup The function to call once before the game loop starts
  * @param draw The function to call once during each frames render period
@@ -66,8 +75,7 @@ typedef struct {
 */
 void TxtSDL_Run(
     const TxtSDL_WindowInfo *window_info, 
-    const char *font_img_path,
-    const char *font_descriptor_path,
+    const TxtSDL_FontLoadInfo *font_info,
     TxtSDL_UpdateFunction update,
     TxtSDL_SetupFunction setup,
     TxtSDL_DrawFunction draw
@@ -76,11 +84,11 @@ void TxtSDL_Run(
 /**
  * Initialises the TxtSDL engine and the screen to draw to
  * @param window_info The information about the window to create
+ * @param font_info The information about the font to load and how to display it
 */
 TxtSDLScreen *TxtSDL_Init(
     const TxtSDL_WindowInfo *window_info,
-    const char *font_img_path,
-    const char *font_descriptor_path
+    const TxtSDL_FontLoadInfo *font_info
 );
 
 /**

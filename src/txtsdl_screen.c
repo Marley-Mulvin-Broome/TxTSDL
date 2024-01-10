@@ -190,6 +190,14 @@ bool TxtSDLScreen_XInBound(const TxtSDLScreen *screen, int x) {
     return x >= 0 && x < screen->width;
 }
 
+int TxtSDLScreen_GetCellWidth(const TxtSDLScreen *screen) {
+    return screen->cell_width;
+}
+
+int TxtSDLScreen_GetCellHeight(const TxtSDLScreen *screen) {
+    return screen->cell_height;
+}
+
 void TxtSDLScreen_Destroy(TxtSDLScreen *screen) {
     freeBuffer(screen->buffer, screen->width);
     free(screen);

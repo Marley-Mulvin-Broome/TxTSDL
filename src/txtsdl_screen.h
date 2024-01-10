@@ -118,6 +118,20 @@ bool TxtSDLScreen_YInBound(const TxtSDLScreen *screen, int y);
 bool TxtSDLScreen_XInBound(const TxtSDLScreen *screen, int x);
 
 /**
+ * Gets the width of each character cell on the screen
+ * @param screen pointer to a screen
+ * @returns the width of each character cell on the screen
+*/
+int TxtSDLScreen_GetCellWidth(const TxtSDLScreen *screen);
+
+/**
+ * Gets the height of each character cell on the screen
+ * @param screen pointer to a screen
+ * @returns the height of each character cell on the screen
+*/
+int TxtSDLScreen_GetCellHeight(const TxtSDLScreen *screen);
+
+/**
  * Destroys a screen
  * @param screen the screen to destroy
 */

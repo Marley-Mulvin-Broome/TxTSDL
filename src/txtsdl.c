@@ -24,16 +24,14 @@ static void cleanupEventHandlers(void);
 
 void TxtSDL_Run(
     const TxtSDL_WindowInfo *window_info, 
-    const char *font_img_path,
-    const char *font_descriptor_path,
+    const TxtSDL_FontLoadInfo *font_info,
     TxtSDL_UpdateFunction update,
     TxtSDL_SetupFunction setup,
     TxtSDL_DrawFunction draw
 ) {
     TxtSDLScreen *screen = TxtSDL_Init(
         window_info,
-        font_img_path,
-        font_descriptor_path
+        font_info
     );
 
     if (setup) {
@@ -96,7 +94,12 @@ void TxtSDL_Run(
         }
 
         TxtSDLScreen_DrawBuffer(screen);
-        TxtSDLCursor_Draw(TxtSDL_Cursor, 16, 16);
+        TxtSDLCursor_Draw(
+            TxtSDL_Cursor, 
+            TxtSDLScreen_GetCellWidth(TxtSDL_Screen), 
+            TxtSDLScreen_GetCellHeight(TxtSDL_Screen)
+        );
+        
         TxtSDL_UpdateWindow();
     }
 
@@ -107,8 +110,7 @@ void TxtSDL_Run(
 
 TxtSDLScreen *TxtSDL_Init(
     const TxtSDL_WindowInfo *window_info,
-    const char *font_img_path,
-    const char *font_descriptor_path
+    const TxtSDL_FontLoadInfo *font_info
 ) {
 	if (SDL_Init(SDL_INIT_EVERYTHING) < 0) {
 		fprintf(stderr, "Error initialising SDL: %s\n", SDL_GetError());
@@ -127,16 +129,16 @@ TxtSDLScreen *TxtSDL_Init(
     TxtSDL_Renderer = SDL_CreateRenderer(
         TxtSDL_Window, 
         -1, 
-        SDL_RENDERER_ACCELERATED
+        SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC
     );
 
     TxtSDL_Screen = TxtSDLScreen_Create(
         50,
         50,
-        16,
-        16,
-        font_img_path,
-        font_descriptor_path
+        font_info->target_width,
+        font_info->target_height,
+        font_info->font_img_path,
+        font_info->font_descriptor_path
     );
 
     TxtSDL_Cursor = TxtSDLCursor_Create(
