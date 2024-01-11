@@ -86,6 +86,16 @@ void TuiControlUnfocus(TuiControl *control) {
 
 }
 
+bool TuiControlEnter(TuiControl *control) {
+    switch (control->type) {
+        case TUI_CONTROL_INPUT:
+            return TuiInputEnter(control->control);
+        default:
+            fprintf(stderr, "Unknown or unsupported control type: %d\n", control->type);
+            return false;
+    }
+}
+
 void TuiControlKeyPress(TuiControl *control, TxTSDLKeyEvent *event) {
     switch (control->type) {
         case TUI_CONTROL_INPUT:

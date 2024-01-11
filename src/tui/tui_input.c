@@ -73,6 +73,10 @@ void TuiInputUnfocus(TuiInput *input) {
     input->focused = false;
 }
 
+bool TuiInputEnter(TuiInput *input) {
+    return input->focused;
+}
+
 void TuiInputKeyPress(TuiInput *input, TxTSDLKeyEvent *event) {
     if (!input->focused || event->key == 1073742049) {
         return;

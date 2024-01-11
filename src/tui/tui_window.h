@@ -40,7 +40,9 @@ void TuiWindowAddChild(TuiWindow *window, TuiControl *child);
  * @param event The event to handle.
 */
 void TuiWindowKeyPress(TuiWindow *window, TxTSDLKeyEvent *event);
-
+void TuiWindowAddSubmitEventListener(TuiWindow *window, TxtSDL_SubmitEventHandler handler);
+void TuiWindowSubmit(TuiWindow *window);
+TuiControl *TuiWindowGetFocusedControl(TuiWindow *window);
 void TuiWindowNextFocus(TuiWindow *window);
 
 /**

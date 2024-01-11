@@ -25,6 +25,8 @@ void TuiInputDraw(TuiInput *input);
 void TuiInputFocus(TuiInput *input);
 void TuiInputUnfocus(TuiInput *input);
 
+bool TuiInputEnter(TuiInput *input);
+
 /**
  * Handles a key press event for a TUI input.
  * @param input The input to handle the event for.

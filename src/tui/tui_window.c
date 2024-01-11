@@ -22,6 +22,7 @@ typedef struct _TuiWindow {
     FocusedControlLinkedList *focusable_controls;
     List *children;
     TxtSDLScreen *screen;
+    List *submitEventListeners;
 } TuiWindow;
 
 static void keypressHandler(TxTSDLKeyEvent *event, void *data);
@@ -53,6 +54,13 @@ TuiWindow *TuiWindowCreate(
 
     if (!window->children) {
         fprintf(stderr, "Failed to create list for window children\n");
+        return NULL;
+    }
+
+    window->submitEventListeners = ListCreate();
+
+    if (!window->submitEventListeners) {
+        fprintf(stderr, "Failed to create list for window submit event listeners\n");
         return NULL;
     }
 
@@ -101,9 +109,23 @@ void TuiWindowAddChild(TuiWindow *window, TuiControl *child) {
 }
 
 void TuiWindowKeyPress(TuiWindow *window, TxTSDLKeyEvent *event) {
-    // Control key presses -> tab
+    // Control key presses -> tab, enter
     if (event->key == SDLK_TAB) {
         TuiWindowNextFocus(window);
+        return;
+    }
+
+    if (event->key == SDLK_RETURN || event->key == SDLK_RETURN2) {
+        TuiControl *focused_control = FocusedControlLinkedListGetFocusedControl(
+            window->focusable_controls
+        );
+
+        bool submitted = TuiControlEnter(focused_control);
+
+        if (submitted) {
+            TuiWindowSubmit(window);
+        }
+
         return;
     }
 
@@ -111,6 +133,27 @@ void TuiWindowKeyPress(TuiWindow *window, TxTSDLKeyEvent *event) {
         TuiControl *child = ListGet(window->children, i);
         TuiControlKeyPress(child, event);
     }
+}
+
+void TuiWindowAddSubmitEventListener(TuiWindow *window, TxtSDL_SubmitEventHandler handler) {
+    ListAdd(window->submitEventListeners, handler);
+}
+
+void TuiWindowSubmit(TuiWindow *window) {
+    for (int i = 0; i < ListSize(window->submitEventListeners); i++) {
+        TxtSDL_SubmitEventHandler handler = ListGet(window->submitEventListeners, i);
+        handler(
+            &(TxtSDLSubmitEvent){
+                .type = TXTSDL_SUBMIT,
+            },
+            TuiWindowGetFocusedControl(window)
+        );
+    }
+
+}
+
+TuiControl *TuiWindowGetFocusedControl(TuiWindow *window) {
+    return FocusedControlLinkedListGetFocusedControl(window->focusable_controls);
 }
 
 void TuiWindowNextFocus(TuiWindow *window) {

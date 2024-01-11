@@ -13,6 +13,10 @@
 
 TuiWindow *game_window;
 
+void windowSubmitted(TxtSDLSubmitEvent *event, void *data) {
+	printf("Window submitted\n");
+}
+
 void setup(TxtSDLScreen *screen) {
 	game_window = TuiWindowCreate(
 		"TXTSDL",
@@ -32,6 +36,11 @@ void setup(TxtSDLScreen *screen) {
 	TuiWindowAddChild(game_window, labelControl);
 	TuiWindowAddChild(game_window, inputControl);
 	TuiWindowAddChild(game_window, TuiControlCreate(TUI_CONTROL_INPUT, second_input));
+
+	TuiWindowAddSubmitEventListener(
+		game_window,
+		windowSubmitted
+	);
 }
 
 void update(TxtSDLScreen *screen, float delta_time) {
